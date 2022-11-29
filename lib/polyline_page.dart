@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:map_polyline/fay_hatlari.dart';
 
 class PolylinePage extends StatefulWidget {
   static const String route = 'polyline';
@@ -40,10 +41,14 @@ class _PolylinePageState extends State<PolylinePage> {
 
   @override
   Widget build(BuildContext context) {
-    final points = <LatLng>[
-      LatLng(40.170558, 24.968076),
-      LatLng(40.217135, 25.111222),
-    ];
+
+    var polyFay = FayHatlari.fayHatlari
+        .map<Polyline>((e) =>
+        Polyline(
+            color: Colors.red,
+            strokeWidth: 2,
+            points: e.map((x) => LatLng(x.latitude, x.longitude)).toList()))
+        .toList();
 
     return Scaffold(
         appBar: AppBar(title: const Text('Polylines')),
@@ -65,8 +70,12 @@ class _PolylinePageState extends State<PolylinePage> {
                     Flexible(
                       child: FlutterMap(
                         options: MapOptions(
-                          center: LatLng(41, 28),
-                          zoom: 5,
+                          // haritanın döndürlümesini engeller
+                          //interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                          center: LatLng(36, 36),
+                          zoom: 4.5,
+                          minZoom: 2.0,
+                          maxZoom: 18.0,
                           onTap: (tapPosition, point) {
                             setState(() {
                               debugPrint('onTap');
@@ -77,18 +86,13 @@ class _PolylinePageState extends State<PolylinePage> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            'http://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                            //'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                             userAgentPackageName:
                             'dev.fleaflet.flutter_map.example',
                           ),
                           PolylineLayer(
-                             polylines: [
-                              Polyline(
-                                  points: points,
-                                  strokeWidth: 2,
-                                  color: Colors.red
-                              ),
-                            ],
+                             polylines: polyFay,
                           ),
                         ],
                       ),
@@ -97,7 +101,7 @@ class _PolylinePageState extends State<PolylinePage> {
                 );
               }
               return const Text(
-                  'Getting map data...\n\nTap on map when complete to refresh map data.');
+                  'Harita yükleniyor...\n\nTamamlandığında harita verilerini yenilemek için haritaya dokunun.');
             },
           ),
         ));
