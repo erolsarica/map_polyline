@@ -13,7 +13,7 @@ class PolylinePage extends StatefulWidget {
 }
 
 class _PolylinePageState extends State<PolylinePage> {
-  late Future<List<Polyline>> polylines2;
+
   late Future<List<Polyline>> polylines;
 
   Future<List<Polyline>> getPolylines() async {
